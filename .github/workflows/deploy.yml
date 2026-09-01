@@ -28,9 +28,11 @@ jobs:
           node-version: 20
 
       - name: Instalar dependencias
+        working-directory: Serpiente
         run: npm install
 
       - name: Construir aplicacion
+        working-directory: Serpiente
         run: npm run build
 
       - name: Configurar Pages
@@ -39,10 +41,11 @@ jobs:
       - name: Guardar aplicacion
         uses: actions/upload-pages-artifact@v3
         with:
-          path: './dist'
+          path: Serpiente/dist
 
 
   deploy:
+
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
@@ -51,6 +54,7 @@ jobs:
     needs: build
 
     steps:
+
       - name: Publicar
         id: deployment
         uses: actions/deploy-pages@v4
