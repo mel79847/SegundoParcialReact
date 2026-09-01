@@ -48,23 +48,21 @@ export default function App() {
     ) {
       return 'comida'
     }
-
     return ''
   }
 
-  const nuevaComida = (nuevaSerpiente: Posicion[]): Posicion => {
-
+  const crearComida = (serpienteActual: Posicion[]): Posicion => {
     let posicion: Posicion = {
       fila: Math.floor(Math.random() * 8),
       columna: Math.floor(Math.random() * 8)
     }
-
     let ocupada = true
 
     while (ocupada) {
+
       ocupada = false
 
-      for (const parte of nuevaSerpiente) {
+      for (const parte of serpienteActual) {
 
         if (
           parte.fila === posicion.fila &&
@@ -76,10 +74,8 @@ export default function App() {
 
       if (ocupada) {
 
-        posicion = {
-          fila: Math.floor(Math.random() * 8),
-          columna: Math.floor(Math.random() * 8)
-        }
+        posicion.fila = Math.floor(Math.random() * 8)
+        posicion.columna = Math.floor(Math.random() * 8)
       }
     }
     return posicion
@@ -94,29 +90,17 @@ export default function App() {
     let nuevaFila = serpiente[0].fila
     let nuevaColumna = serpiente[0].columna
 
-
     if (evento.key === 'ArrowUp') {
-      console.log('arriba')
       nuevaFila = nuevaFila - 1
     }
-
-    else if (evento.key === 'ArrowDown') {
-      console.log('abajo')
+    if (evento.key === 'ArrowDown') {
       nuevaFila = nuevaFila + 1
     }
-
-    else if (evento.key === 'ArrowLeft') {
-      console.log('izquierda')
+    if (evento.key === 'ArrowLeft') {
       nuevaColumna = nuevaColumna - 1
     }
-
-    else if (evento.key === 'ArrowRight') {
-      console.log('derecha')
+    if (evento.key === 'ArrowRight') {
       nuevaColumna = nuevaColumna + 1
-    }
-
-    else {
-      return
     }
 
     const nuevaCabeza: Posicion = {
@@ -124,7 +108,6 @@ export default function App() {
       columna: nuevaColumna
     }
 
-    //si choca con los bordes
     if (
       nuevaCabeza.fila < 0 ||
       nuevaCabeza.fila > 7 ||
@@ -136,9 +119,7 @@ export default function App() {
       return
     }
 
-    //si choca con su propio cuerpo
     for (const parte of serpiente) {
-
       if (
         parte.fila === nuevaCabeza.fila &&
         parte.columna === nuevaCabeza.columna
@@ -149,59 +130,53 @@ export default function App() {
       }
     }
 
-    let nuevaSerpiente: Posicion[] = [
-      nuevaCabeza,
-      ...serpiente
-    ]
+    let nuevaSerpiente: Posicion[] = []
+    nuevaSerpiente.push(nuevaCabeza)
 
-    //cuando la serpiente si comio
+    for (const parte of serpiente) {
+      nuevaSerpiente.push(parte)
+    }
     if (
       nuevaCabeza.fila === comida.fila &&
       nuevaCabeza.columna === comida.columna
     ) {
-
-      console.log('ñam ñam')
       setComida(
-        nuevaComida(nuevaSerpiente)
+        crearComida(nuevaSerpiente)
       )
-    }
-    // si la serpiente no come, se elimina su cola askj
-    else {
+    } else {
+
       nuevaSerpiente = nuevaSerpiente.slice(
         0,
         nuevaSerpiente.length - 1
       )
     }
     setSerpiente(nuevaSerpiente)
-    console.log(nuevaSerpiente)
   }
-  return (
 
+  let claseJuego = 'juego'
+  if (estado === 'terminado') {
+    claseJuego = 'juego terminado'
+  }
+
+  return (
     <div
-      className={estado === 'terminado' ? 'juego terminado' : 'juego'}
+      className={claseJuego}
       tabIndex={0}
       onKeyDown={manejarTecla}
-      autoFocus
     >
       <h1>Serpiente por turnos</h1>
       <p>Estado: {estado}</p>
-      {estado === 'terminado' && (
-        <h2>Juego terminado</h2>
-      )}
-
       <table>
         <tbody>
           {[0, 1, 2, 3, 4, 5, 6, 7].map((fila) => {
-
             return (
-
               <tr key={fila}>
                 {[0, 1, 2, 3, 4, 5, 6, 7].map((columna) => {
-
                   return (
                     <td
                       key={columna}
-                      className={obtenerClase(fila, columna)}>
+                      className={obtenerClase(fila, columna)}
+                    >
                     </td>
                   )
                 })}
